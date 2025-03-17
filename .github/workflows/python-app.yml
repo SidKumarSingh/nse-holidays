@@ -5,7 +5,7 @@ name: NSE Holidays extractor
 
 on:
   schedule:
-    - cron: '39 13 * * 1-5'
+    - cron: '00 14 * * 1-5'
 
 permissions:
   contents:write
