@@ -5,22 +5,23 @@ name: NSE Holidays extractor
 
 on:
   schedule:
-    - cron: '59 14 * * 1-5'
-
-permissions:
-  contents:write
+    - cron: '5 0 * * 1-5'
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    
     steps:
     - name: checkout repo content
       uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
       
     - name: Set up Python 3.10
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v4
       with:
-        python-version: "3.10"
+        python-version: '3.x'
     
     - name: Install dependencies
       run: |
@@ -32,13 +33,12 @@ jobs:
 
     - name: update holidays.txt
       run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add -A
-          git diff-index --quiet HEAD || (git commit -a -m "updated files" --allow-empty)
-
-    - name: push changes
-      uses: ad-m/github-push-action@v0.6.0
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: main 
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+          git add holidays.txt
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update NSE holidays data"
+            git push origin $(git rev-parse --abbrev-ref HEAD)
+          fi
