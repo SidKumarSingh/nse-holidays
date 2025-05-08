@@ -11,7 +11,7 @@ headers['Accept'] = 'application/json'
 r = requests.get(url=url,headers=headers)
 resp = json.loads(r.text)
 
-holidays = [x['tradingDate'] for x in resp['FO']]
+holidays = [x['tradingDate'] for x in resp.get('FO')]
 
 with open('holidays.txt',mode='w') as f:
     f.write(str(holidays))
